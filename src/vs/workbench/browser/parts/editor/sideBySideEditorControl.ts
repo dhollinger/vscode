@@ -100,6 +100,8 @@ export class SideBySideEditorControl implements ISideBySideEditorControl, IVerti
 	private containerWidth: number[];
 	private containerInitialRatios: number[];
 
+	private editorAndTitleContainer: Builder[];
+
 	private titleContainer: Builder[];
 	private titleAreaControl: ITitleAreaControl[];
 	private progressBar: ProgressBar[];
@@ -144,6 +146,8 @@ export class SideBySideEditorControl implements ISideBySideEditorControl, IVerti
 
 		this.containers = [];
 		this.containerWidth = [];
+
+		this.editorAndTitleContainer = [];
 
 		this.titleContainer = [];
 		this.titleAreaControl = [];
@@ -198,17 +202,18 @@ export class SideBySideEditorControl implements ISideBySideEditorControl, IVerti
 		// Up to date context
 		POSITIONS.forEach(position => {
 			this.titleAreaControl[position].setContext(this.stacks.groupAt(position));
+			this.titleAreaControl[position].refresh();
 		});
 
 		// Refresh / update if group is visible and has a position
-		const position = this.stacks.positionOfGroup(e.group);
-		if (position >= 0) {
-			if (e.structural) {
-				this.titleAreaControl[position].refresh();
-			} else {
-				this.titleAreaControl[position].update();
-			}
-		}
+		// const position = this.stacks.positionOfGroup(e.group);
+		// if (position >= 0) {
+		// 	if (e.structural) {
+		// 		this.titleAreaControl[position].refresh();
+		// 	} else {
+		// 		this.titleAreaControl[position].update();
+		// 	}
+		// }
 	}
 
 	public get onGroupFocusChanged(): Event<void> {
@@ -231,7 +236,7 @@ export class SideBySideEditorControl implements ISideBySideEditorControl, IVerti
 		this.trackFocus(editor, position);
 
 		// Find target container and build into
-		let target = this.containers[position];
+		let target = this.editorAndTitleContainer[position];
 		container.build(target);
 
 		// Adjust layout according to provided ratios (used when restoring multiple editors at once)
@@ -538,12 +543,11 @@ export class SideBySideEditorControl implements ISideBySideEditorControl, IVerti
 	}
 
 	private rochade(from: Position, to: Position): void {
+		// console.log("!!! ROCHADE !!!")
 
 		// Move editor to new position
-		let editorContainer = this.visibleEditorContainers[from];
+		this.editorAndTitleContainer[from].appendTo(this.containers[to]);
 		let editor = this.visibleEditors[from];
-		editorContainer.offDOM();
-		editorContainer.build(this.containers[to]);
 		editor.changePosition(to);
 
 		// Change data structures
@@ -551,11 +555,14 @@ export class SideBySideEditorControl implements ISideBySideEditorControl, IVerti
 		this.visibleEditorFocusTrackers[to] = listeners;
 		this.visibleEditorFocusTrackers[from] = null;
 
+		let editorContainer = this.visibleEditorContainers[from];
 		this.visibleEditorContainers[to] = editorContainer;
 		this.visibleEditorContainers[from] = null;
 
 		this.visibleEditors[to] = editor;
 		this.visibleEditors[from] = null;
+
+		// TODO what about updating more data structures (title, progress, editorTitleContainer?)
 
 		// Update last active position
 		if (this.lastActivePosition === from) {
@@ -564,26 +571,17 @@ export class SideBySideEditorControl implements ISideBySideEditorControl, IVerti
 	}
 
 	public move(from: Position, to: Position): void {
-		let editorContainerPos1: Builder;
-		let editorPos1: BaseEditor;
-		let editorContainerPos2: Builder;
-		let editorPos2: BaseEditor;
 
 		// Distance 1: Swap Editors
 		if (Math.abs(from - to) === 1) {
+			// console.log("MOVE")
 
 			// Move editors to new position
-			editorContainerPos1 = this.visibleEditorContainers[from];
-			editorPos1 = this.visibleEditors[from];
-			editorContainerPos1.offDOM();
-			editorContainerPos1.build(this.containers[to]);
-			editorPos1.changePosition(to);
+			this.editorAndTitleContainer[from].appendTo(this.containers[to]);
+			this.visibleEditors[from].changePosition(to);
 
-			editorContainerPos2 = this.visibleEditorContainers[to];
-			editorPos2 = this.visibleEditors[to];
-			editorContainerPos2.offDOM();
-			editorContainerPos2.build(this.containers[from]);
-			editorPos2.changePosition(from);
+			this.editorAndTitleContainer[to].appendTo(this.containers[from]);
+			this.visibleEditors[to].changePosition(from);
 
 			// Update last active position accordingly
 			if (this.lastActivePosition === from) {
@@ -595,6 +593,7 @@ export class SideBySideEditorControl implements ISideBySideEditorControl, IVerti
 
 		// Otherwise Move Editors
 		else {
+			// console.log("SWAP")
 
 			// Find new positions
 			let newLeftPosition: Position;
@@ -612,23 +611,14 @@ export class SideBySideEditorControl implements ISideBySideEditorControl, IVerti
 			}
 
 			// Move editors to new position
-			editorContainerPos1 = this.visibleEditorContainers[Position.LEFT];
-			editorPos1 = this.visibleEditors[Position.LEFT];
-			editorContainerPos1.offDOM();
-			editorContainerPos1.build(this.containers[newLeftPosition]);
-			editorPos1.changePosition(newLeftPosition);
+			this.editorAndTitleContainer[Position.LEFT].appendTo(this.containers[newLeftPosition]);
+			this.visibleEditors[Position.LEFT].changePosition(newLeftPosition);
 
-			editorContainerPos2 = this.visibleEditorContainers[Position.CENTER];
-			editorPos2 = this.visibleEditors[Position.CENTER];
-			editorContainerPos2.offDOM();
-			editorContainerPos2.build(this.containers[newCenterPosition]);
-			editorPos2.changePosition(newCenterPosition);
+			this.editorAndTitleContainer[Position.CENTER].appendTo(this.containers[newCenterPosition]);
+			this.visibleEditors[Position.CENTER].changePosition(newCenterPosition);
 
-			let editorContainerPos3 = this.visibleEditorContainers[Position.RIGHT];
-			let editorPos3 = this.visibleEditors[Position.RIGHT];
-			editorContainerPos3.offDOM();
-			editorContainerPos3.build(this.containers[newRightPosition]);
-			editorPos3.changePosition(newRightPosition);
+			this.editorAndTitleContainer[Position.RIGHT].appendTo(this.containers[newRightPosition]);
+			this.visibleEditors[Position.RIGHT].changePosition(newRightPosition);
 
 			// Update last active position accordingly
 			if (this.lastActivePosition === Position.LEFT) {
@@ -645,6 +635,13 @@ export class SideBySideEditorControl implements ISideBySideEditorControl, IVerti
 		arrays.move(this.visibleEditors, from, to);
 		arrays.move(this.visibleEditorFocusTrackers, from, to);
 		arrays.move(this.containerWidth, from, to);
+
+
+
+		arrays.move(this.editorAndTitleContainer, from, to);
+		arrays.move(this.titleAreaControl, from, to);
+		arrays.move(this.titleContainer, from, to);
+		arrays.move(this.progressBar, from, to);
 
 		// Layout
 		if (!this.leftSash.isHidden()) {
@@ -750,17 +747,21 @@ export class SideBySideEditorControl implements ISideBySideEditorControl, IVerti
 		// Right Container
 		this.containers[Position.RIGHT] = $(parent).div({ class: 'one-editor-container editor-right monaco-editor-background' });
 
+		// Editor and Title Containers
+		POSITIONS.forEach(position => {
+			this.editorAndTitleContainer[position] = $(this.containers[position]).div({ class: 'one-editor-wrapper' });
+		});
+
 		// InstantiationServices
 		POSITIONS.forEach(position => {
 			this.instantiationServices[position] = this.instantiationService.createChild(new ServiceCollection(
-				[IKeybindingService, this.keybindingService.createScoped(this.containers[position].getHTMLElement())]
-				// [IProgressService, ]
+				[IKeybindingService, this.keybindingService.createScoped(this.editorAndTitleContainer[position].getHTMLElement())]
 			));
 		});
 
 		// Title containers
 		POSITIONS.forEach(position => {
-			this.titleContainer[position] = $(this.containers[position]).div({ 'class': 'title' });
+			this.titleContainer[position] = $(this.editorAndTitleContainer[position]).div({ 'class': 'title' });
 			this.hookTitleDragListener(position);
 
 			// Title Control
@@ -769,7 +770,7 @@ export class SideBySideEditorControl implements ISideBySideEditorControl, IVerti
 
 		// Progress Bars per position
 		POSITIONS.forEach(position => {
-			this.progressBar[position] = new ProgressBar($(this.containers[position]));
+			this.progressBar[position] = new ProgressBar($(this.editorAndTitleContainer[position]));
 			this.progressBar[position].getContainer().hide();
 		});
 	}

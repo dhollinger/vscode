@@ -159,7 +159,9 @@ export abstract class TitleControl implements ITitleAreaControl {
 	}
 
 	public setContext(group: IEditorGroup): void {
-		this.context = group;
+		if (!this.context || !group) {
+			this.context = group;
+		}
 	}
 
 	public update(instant?: boolean): void {
