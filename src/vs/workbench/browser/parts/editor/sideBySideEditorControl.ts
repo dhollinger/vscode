@@ -564,26 +564,26 @@ export class SideBySideEditorControl implements ISideBySideEditorControl, IVerti
 	}
 
 	public move(from: Position, to: Position): void {
-		let editorContainerPos1: Builder;
-		let editorPos1: BaseEditor;
-		let editorContainerPos2: Builder;
-		let editorPos2: BaseEditor;
+		// let editorContainerPos1: Builder;
+		// let editorPos1: BaseEditor;
+		// let editorContainerPos2: Builder;
+		// let editorPos2: BaseEditor;
 
 		// Distance 1: Swap Editors
 		if (Math.abs(from - to) === 1) {
 
 			// Move editors to new position
-			editorContainerPos1 = this.visibleEditorContainers[from];
-			editorPos1 = this.visibleEditors[from];
-			editorContainerPos1.offDOM();
-			editorContainerPos1.build(this.containers[to]);
-			editorPos1.changePosition(to);
+			// editorContainerPos1 = this.visibleEditorContainers[from];
+			// editorPos1 = this.visibleEditors[from];
+			// editorContainerPos1.offDOM();
+			// editorContainerPos1.build(this.containers[to]);
+			// editorPos1.changePosition(to);
 
-			editorContainerPos2 = this.visibleEditorContainers[to];
-			editorPos2 = this.visibleEditors[to];
-			editorContainerPos2.offDOM();
-			editorContainerPos2.build(this.containers[from]);
-			editorPos2.changePosition(from);
+			// editorContainerPos2 = this.visibleEditorContainers[to];
+			// editorPos2 = this.visibleEditors[to];
+			// editorContainerPos2.offDOM();
+			// editorContainerPos2.build(this.containers[from]);
+			// editorPos2.changePosition(from);
 
 			// Update last active position accordingly
 			if (this.lastActivePosition === from) {
@@ -597,53 +597,53 @@ export class SideBySideEditorControl implements ISideBySideEditorControl, IVerti
 		else {
 
 			// Find new positions
-			let newLeftPosition: Position;
-			let newCenterPosition: Position;
-			let newRightPosition: Position;
+			// let newLeftPosition: Position;
+			// let newCenterPosition: Position;
+			// let newRightPosition: Position;
 
-			if (from === Position.LEFT) {
-				newLeftPosition = Position.RIGHT;
-				newCenterPosition = Position.LEFT;
-				newRightPosition = Position.CENTER;
-			} else {
-				newLeftPosition = Position.CENTER;
-				newCenterPosition = Position.RIGHT;
-				newRightPosition = Position.LEFT;
-			}
+			// if (from === Position.LEFT) {
+			// 	newLeftPosition = Position.RIGHT;
+			// 	newCenterPosition = Position.LEFT;
+			// 	newRightPosition = Position.CENTER;
+			// } else {
+			// 	newLeftPosition = Position.CENTER;
+			// 	newCenterPosition = Position.RIGHT;
+			// 	newRightPosition = Position.LEFT;
+			// }
 
-			// Move editors to new position
-			editorContainerPos1 = this.visibleEditorContainers[Position.LEFT];
-			editorPos1 = this.visibleEditors[Position.LEFT];
-			editorContainerPos1.offDOM();
-			editorContainerPos1.build(this.containers[newLeftPosition]);
-			editorPos1.changePosition(newLeftPosition);
+			// // Move editors to new position
+			// editorContainerPos1 = this.visibleEditorContainers[Position.LEFT];
+			// editorPos1 = this.visibleEditors[Position.LEFT];
+			// editorContainerPos1.offDOM();
+			// editorContainerPos1.build(this.containers[newLeftPosition]);
+			// editorPos1.changePosition(newLeftPosition);
 
-			editorContainerPos2 = this.visibleEditorContainers[Position.CENTER];
-			editorPos2 = this.visibleEditors[Position.CENTER];
-			editorContainerPos2.offDOM();
-			editorContainerPos2.build(this.containers[newCenterPosition]);
-			editorPos2.changePosition(newCenterPosition);
+			// editorContainerPos2 = this.visibleEditorContainers[Position.CENTER];
+			// editorPos2 = this.visibleEditors[Position.CENTER];
+			// editorContainerPos2.offDOM();
+			// editorContainerPos2.build(this.containers[newCenterPosition]);
+			// editorPos2.changePosition(newCenterPosition);
 
-			let editorContainerPos3 = this.visibleEditorContainers[Position.RIGHT];
-			let editorPos3 = this.visibleEditors[Position.RIGHT];
-			editorContainerPos3.offDOM();
-			editorContainerPos3.build(this.containers[newRightPosition]);
-			editorPos3.changePosition(newRightPosition);
+			// let editorContainerPos3 = this.visibleEditorContainers[Position.RIGHT];
+			// let editorPos3 = this.visibleEditors[Position.RIGHT];
+			// editorContainerPos3.offDOM();
+			// editorContainerPos3.build(this.containers[newRightPosition]);
+			// editorPos3.changePosition(newRightPosition);
 
 			// Update last active position accordingly
-			if (this.lastActivePosition === Position.LEFT) {
-				this.doSetActive(this.lastActiveEditor, newLeftPosition);
-			} else if (this.lastActivePosition === Position.CENTER) {
-				this.doSetActive(this.lastActiveEditor, newCenterPosition);
-			} else if (this.lastActivePosition === Position.RIGHT) {
-				this.doSetActive(this.lastActiveEditor, newRightPosition);
-			}
+			// if (this.lastActivePosition === Position.LEFT) {
+			// 	this.doSetActive(this.lastActiveEditor, newLeftPosition);
+			// } else if (this.lastActivePosition === Position.CENTER) {
+			// 	this.doSetActive(this.lastActiveEditor, newCenterPosition);
+			// } else if (this.lastActivePosition === Position.RIGHT) {
+			// 	this.doSetActive(this.lastActiveEditor, newRightPosition);
+			// }
 		}
 
 		// Change data structures
-		arrays.move(this.visibleEditorContainers, from, to);
-		arrays.move(this.visibleEditors, from, to);
-		arrays.move(this.visibleEditorFocusTrackers, from, to);
+		// arrays.move(this.visibleEditorContainers, from, to);
+		// arrays.move(this.visibleEditors, from, to);
+		// arrays.move(this.visibleEditorFocusTrackers, from, to);
 		arrays.move(this.containerWidth, from, to);
 
 		// Layout

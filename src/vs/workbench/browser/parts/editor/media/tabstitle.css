@@ -5,6 +5,14 @@
 
 /* Tabs Container */
 
+.monaco-editor.vs .scroll-decoration {
+	box-shadow: #fff 0 6px 6px -6px inset; /* TODO: use a CSS custom property of the theme's `.monaco-editor-background` color here to blend better */
+}
+
+.monaco-editor.vs-dark .scroll-decoration {
+	box-shadow: #1E1E1E 0 6px 6px -6px inset; /* TODO: use a CSS custom property of the theme's `.monaco-editor-background` color here to blend better */
+}
+
 .monaco-workbench > .part.editor > .content > .one-editor-container > .title > .monaco-scrollable-element {
 	flex: 1;
 }

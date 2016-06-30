@@ -705,6 +705,8 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupService
 	}
 
 	public moveGroup(from: Position, to: Position): void {
+		// console.log("moveGroup. from: ", from, ", to: ", to);
+
 		const fromGroup = this.stacks.groupAt(from);
 		const toGroup = this.stacks.groupAt(to);
 
@@ -712,18 +714,35 @@ export class EditorPart extends Part implements IEditorPart, IEditorGroupService
 			return; // Ignore if we cannot move
 		}
 
+		const fromInput = fromGroup.activeEditor;
+		const toInput = toGroup.activeEditor;
+
+		// console.log("fromInput: ", fromInput.getName(), ", toInput: ", toInput.getName());
+
 		// Update stacks model
 		this.modifyGroups(() => this.stacks.moveGroup(fromGroup, to));
 
 		// Move widgets
 		this.sideBySideControl.move(from, to);
 
+		this.openEditor(fromInput, null, this.stacks.positionOfGroup(toGroup)).then(() => {
+			this.openEditor(toInput, null, this.stacks.positionOfGroup(fromGroup));
+		});
+
+		// this.openEditors([
+		// 	{ input: fromInput, position: this.stacks.positionOfGroup(toGroup) },
+		// 	{ input: toInput, position: this.stacks.positionOfGroup(fromGroup) }
+		// ]).then(() => {
+		// 	// this.doCloseEditor(this.stacks.groupAt(from), fromInput);
+		// 	// this.doCloseEditor(this.stacks.groupAt(to), toInput);
+		// });
+
 		// Move data structures
-		arrays.move(this.visibleEditors, from, to);
-		arrays.move(this.editorOpenToken, from, to);
-		arrays.move(this.mapEditorInstantiationPromiseToEditor, from, to);
-		arrays.move(this.instantiatedEditors, from, to);
-		arrays.move(this.mapEditorToEditorContainers, from, to);
+		// arrays.move(this.visibleEditors, from, to);
+		// arrays.move(this.editorOpenToken, from, to);
+		// arrays.move(this.mapEditorInstantiationPromiseToEditor, from, to);
+		// arrays.move(this.instantiatedEditors, from, to);
+		// arrays.move(this.mapEditorToEditorContainers, from, to);
 
 		// Restore focus
 		this.focusGroup(this.stacks.positionOfGroup(fromGroup));
